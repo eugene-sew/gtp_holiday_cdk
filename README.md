@@ -1,10 +1,10 @@
-# Holiday Task Management Lab
+# Field Team Task Management System Lab
 
-Welcome to the **Holiday Task Management Lab**! This project is designed as a hands-on training lab to help you learn how to build and deploy a modern, serverless application on AWS using the AWS Cloud Development Kit (CDK) in Python.
+This repository contains my solution to a lab assignment for designing and implementing a Task Management System for a field team using AWS serverless services, built with the AWS Cloud Development Kit (CDK) in Python.
 
 ## Project Overview
 
-This lab guides you through the creation of a cloud-native task management system for managing holiday-related tasks. The system allows administrators to assign tasks to users, set deadlines, and notify users via email and push notifications. Users can view and update their assigned tasks. The project demonstrates best practices in serverless architecture, authentication, and event-driven notifications.
+The goal of this project is to create a secure, event-driven task management system that enables an admin to create and assign tasks to field team members. Team members log in to view and update their assigned tasks, while the admin can oversee all tasks, assignments, and deadlines. The system efficiently handles task notifications, status updates, and deadline tracking to ensure a seamless workflow for the field team.
 
 ## Main Features
 
@@ -12,17 +12,18 @@ This lab guides you through the creation of a cloud-native task management syste
   - AWS Cognito User Pools for user management (admin/member roles)
   - Secure API access with Cognito authorizer
 - **Task Management API:**
-  - Create, view, and update tasks via RESTful endpoints (API Gateway)
-  - Role-based access (admins assign, members update their own)
+  - Admin can create and assign tasks to team members
+  - Team members can view and update their assigned tasks
+  - Admin can oversee all tasks, assignments, and deadlines
 - **Serverless Compute:**
   - AWS Lambda functions for all backend logic (task CRUD, user listing, deadline checks)
 - **Persistent Storage:**
   - DynamoDB table for storing tasks
 - **Notifications:**
   - Email notifications via Amazon SES when tasks are assigned
-  - Push notifications via Amazon SNS when task status changes
-- **Scheduled Checks:**
-  - Lambda function triggered by EventBridge to check for upcoming deadlines
+  - Push notifications via Amazon SNS for status updates and deadline alerts
+- **Deadline Tracking:**
+  - Lambda function triggered by EventBridge to check for upcoming deadlines and notify relevant users
 - **Infrastructure as Code:**
   - Entire stack defined and deployed using AWS CDK (Python)
 
@@ -30,7 +31,7 @@ This lab guides you through the creation of a cloud-native task management syste
 
 Below is a high-level architecture diagram of the solution:
 
-![Holiday Task Management Lab Architecture](image/structure.jpg)
+![Field Team Task Management System Architecture](image/structure.jpg)
 
 ## Technology Stack
 
@@ -58,12 +59,13 @@ Below is a high-level architecture diagram of the solution:
    - Use the output API endpoint to interact with the system (see CloudFormation outputs after deploy)
    - Authenticate using Cognito (admin/member roles)
 
-## Lab Learning Objectives
+## Project Learning Objectives
 
-- Understand how to build a secure, serverless API on AWS
-- Learn to use AWS CDK for infrastructure automation
-- Practice integrating Lambda, API Gateway, Cognito, DynamoDB, SNS, and SES
+- Build a secure, serverless API on AWS
+- Use AWS CDK for infrastructure automation
+- Integrate Lambda, API Gateway, Cognito, DynamoDB, SNS, and SES
 - Gain experience with event-driven architectures and scheduled tasks
+- Design a workflow for efficient field team task management
 
 ## Useful Commands
 
@@ -74,4 +76,4 @@ Below is a high-level architecture diagram of the solution:
 
 ---
 
-Enjoy your learning journey with the Holiday Task Management Lab!
+Enjoy exploring my solution to the Field Team Task Management System Lab!
