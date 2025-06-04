@@ -1,3 +1,20 @@
+# This lambda function serves as a backend handler for user management within the Amazon Cognito User Pool.
+# It processes incoming API Gateway requests to perform two main operations:
+#
+# 1. GET Request (List Users)
+#    - Allows administrators to retrieve a comprehensive list of all users within the Cognito User Pool.
+#    - For each user, it fetches their attributes (email) and the groups they belong to.
+#    - Requires 'admin' group membership for authorization.
+#
+# 2. POST Request (Create User)
+#    - Enables administrators to create new users in the Cognito User Pool.
+#    - Expects a JSON body containing 'username' and 'email' (mandatory), and an optional 'temporaryPassword'.
+#    - New users are automatically assigned to the 'member' Cognito group.
+#    - A temporary password is set, and the Cognito service sends a welcome email with this password (and a login link, if configured in the User Pool settings).
+#    - Requires 'admin' group membership for authorization.
+#
+# Both operations include CORS headers in their responses to allow cross-origin requests.
+
 import json
 import boto3
 import os
@@ -31,6 +48,63 @@ def handler(event, context):
                 'Access-Control-Allow-Origin': '*' 
             }
         }
+
+    if http_method == 'POST':
+        if 'admin' not in groups:
+            return {
+                'statusCode': 403,
+                'body': json.dumps({'error': 'Unauthorized. Only admins can create users.'}),
+                'headers': {
+                    'Access-Control-Allow-Origin': '*'
+                }
+            }
+        try:
+            body = json.loads(event.get('body', '{}'))
+            username = body.get('username')
+            email = body.get('email')
+            temp_password = body.get('temporaryPassword', 'TempPassword123!')
+            if not username or not email:
+                return {
+                    'statusCode': 400,
+                    'body': json.dumps({'error': 'username and email are required.'}),
+                    'headers': {
+                        'Access-Control-Allow-Origin': '*'
+                    }
+                }
+            # Create the user
+            create_response = cognito_client.admin_create_user(
+                UserPoolId=USER_POOL_ID,
+                Username=username,
+                UserAttributes=[
+                    {'Name': 'email', 'Value': email},
+                    {'Name': 'email_verified', 'Value': 'true'}
+                ],
+                TemporaryPassword=temp_password,
+                DesiredDeliveryMediums=['EMAIL']
+            
+            )
+            # Add user to 'member' group
+            cognito_client.admin_add_user_to_group(
+                UserPoolId=USER_POOL_ID,
+                Username=username,
+                GroupName='member'
+            )
+            return {
+                'statusCode': 201,
+                'body': json.dumps({'message': f'User {username} created and added to member group.'}),
+                'headers': {
+                    'Access-Control-Allow-Origin': '*'
+                }
+            }
+        except Exception as e:
+            print(f"Error creating user: {e}")
+            return {
+                'statusCode': 500,
+                'body': json.dumps({'error': str(e)}),
+                'headers': {
+                    'Access-Control-Allow-Origin': '*'
+                }
+            }
 
     try:
         response = cognito_client.list_users(

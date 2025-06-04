@@ -1,3 +1,19 @@
+# This AWS CDK stack defines the infrastructure for the Holiday Task Management application.
+# It provisions and configures various AWS resources, including:
+#
+# - DynamoDB Table: Stores task details.
+# - Cognito User Pool: Manages user authentication, sign-up, and groups (admin, member).
+# - API Gateway: Provides RESTful endpoints for task and user management, secured by Cognito Authorizer.
+# - Lambda Functions: 
+#   - `TaskHandler`: Handles CRUD operations for tasks, integrates with DynamoDB and sends notifications.
+#   - `ListUsersHandler`: Manages Cognito user listing and creation.
+#   - `DeadlineChecker`: Periodically checks task deadlines and sends alerts.
+# - **SNS Topic**: Used for sending task assignment and status update notifications.
+# - **EventBridge Rule**: Schedules the `DeadlineChecker` Lambda to run hourly.
+#
+# This stack sets up necessary IAM roles and permissions for Lambda functions to interact with other services,
+# and configures CORS for API Gateway endpoints.
+
 from aws_cdk import (
     Stack,
     Duration,
@@ -183,7 +199,7 @@ class HolidayStack(Stack):
 
         # Grant Cognito ListUsers permission to the Lambda
         list_users_function.add_to_role_policy(iam.PolicyStatement(
-            actions=["cognito-idp:ListUsers", "cognito-idp:AdminListGroupsForUser"],
+            actions=["cognito-idp:ListUsers", "cognito-idp:AdminListGroupsForUser", "cognito-idp:AdminCreateUser", "cognito-idp:AdminAddUserToGroup"],
             resources=[user_pool.user_pool_arn]
         ))
 
@@ -222,6 +238,17 @@ class HolidayStack(Stack):
         )
 
         users_resource.add_method("GET", list_users_integration,
+            authorization_type=apigw.AuthorizationType.COGNITO,
+            authorizer=authorizer,
+            method_responses=[{
+                'statusCode': '200',
+                'responseParameters': {
+                    'method.response.header.Access-Control-Allow-Origin': True
+                }
+            }]
+        )
+
+        users_resource.add_method("POST", list_users_integration,
             authorization_type=apigw.AuthorizationType.COGNITO,
             authorizer=authorizer,
             method_responses=[{

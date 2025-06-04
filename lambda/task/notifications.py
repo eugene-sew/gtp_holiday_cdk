@@ -1,3 +1,19 @@
+# This module provides utility functions for sending various notifications related to task management.
+# It leverages AWS SES (Simple Email Service) for sending task assignment emails and AWS SNS (Simple Notification Service) for status update notifications.
+#
+# Key functionalities include:
+#
+# 1. send_task_assignment_email(recipient_email, task_description, task_deadline, assignee_username)
+#    - Sends an email to a specified recipient when a new task is assigned.
+#    - Includes task description, deadline, and assignee's username in the email body.
+#    - **Important Note:** If using AWS SES in sandbox mode (default for new accounts), emails can only be sent to and from verified email addresses or domains within SES. For production, you'll need to move out of the sandbox.
+#
+# 2. send_status_update_notification(task_id, task_description, old_status, new_status, updated_by_username, assigned_to_sub_of_task)
+#    - Publishes a message to an SNS topic when a task's status changes.
+#    - Provides details about the task ID, description, old and new statuses, and the user who updated it.
+#    - Attempts to fetch a friendly username for the assigned user from Cognito for better readability in the notification.
+
+
 import boto3
 import os
 from botocore.exceptions import ClientError

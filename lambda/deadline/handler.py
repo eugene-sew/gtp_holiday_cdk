@@ -1,3 +1,9 @@
+# This lambda function periodically checks for tasks nearing their deadlines.
+# It scans the DynamoDB 'TaskTable' for tasks that are not yet 'Completed'
+# and whose deadlines are within the next hour.
+# For each task meeting these criteria, it publishes an alert message to an SNS topic.
+# This function is typically triggered by an Amazon EventBridge scheduled rule (e.g., hourly).
+
 import boto3
 import os
 from datetime import datetime, timedelta

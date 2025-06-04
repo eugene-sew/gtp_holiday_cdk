@@ -29,9 +29,9 @@ The goal of this project is to create a secure, event-driven task management sys
 
 ## Architecture Diagram
 
-Below is a high-level architecture diagram of the solution:
+Below is the architecture diagram of the solution:
 
-![Field Team Task Management System Architecture](image/structure.jpg)
+![Field Team Task Management System Architecture](image/structure.png)
 
 ## Technology Stack
 

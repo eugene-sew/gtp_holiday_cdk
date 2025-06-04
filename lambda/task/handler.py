@@ -1,3 +1,14 @@
+# This lambda function serves as the primary handler for task management operations via API Gateway.
+# It supports creating, listing, and updating tasks stored in Amazon DynamoDB.
+#
+# Key functionalities:
+# - GET /tasks: Lists tasks. Admins can see all tasks; regular users see only tasks assigned to them.
+# - POST /tasks: Creates a new task. Admin-only. Verifies the assigned user in Cognito and sends an email notification.
+# - PUT /tasks: Updates an existing task. Admins or the assigned user can update. Triggers an SNS notification on status change.
+#
+# Authorization is handled via Cognito User Pools, leveraging user claims and group memberships.
+# It integrates with the `notifications` module for sending emails and SNS messages.
+
 import json
 import boto3
 import os
